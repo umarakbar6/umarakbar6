@@ -1,0 +1,1190 @@
+{
+  "name": "Order Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1z35UlnHKcrKkhtn9H9LZ02D1R1kdLFG_sv8QT6OblNw",
+          "mode": "list",
+          "cachedResultName": "Karachi Food House",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1z35UlnHKcrKkhtn9H9LZ02D1R1kdLFG_sv8QT6OblNw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 918456602,
+          "mode": "list",
+          "cachedResultName": "Form Responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1z35UlnHKcrKkhtn9H9LZ02D1R1kdLFG_sv8QT6OblNw/edit#gid=918456602"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "id": "11e284d8-aafe-400f-8836-bbcded7635a2",
+      "name": "Google Sheets: Form Responses Row Added",
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1296,
+        304
+      ],
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "4UxtSh30sPy6DjxD",
+          "name": "Google Sheets Trigger OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "maxItems": 32
+      },
+      "id": "0237fcb5-97ac-4001-af49-6ab16f6d4a76",
+      "name": "Limit: Process 1 Order",
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -1040,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "customerName",
+              "type": "string",
+              "value": "={{ $json['Customer Name'] }}",
+              "id": "ae896dd8-8c10-4fef-8575-4e0c8bf10e8f"
+            },
+            {
+              "name": "customerEmail",
+              "type": "string",
+              "value": "={{ $json['Customer Email'] }}",
+              "id": "043dece3-206e-4be8-96b7-f00f52cbe39e"
+            },
+            {
+              "name": "foodItem",
+              "type": "string",
+              "value": "={{ $json['Food Items'] }}",
+              "id": "be9b3f83-e7ef-409c-b1f4-d70124be3d07"
+            },
+            {
+              "name": "quantity",
+              "type": "number",
+              "value": "={{ $('Google Sheets: Form Responses Row Added').item.json['Quantity '] }}",
+              "id": "c765b189-463a-4979-9dc2-f8491689f48e"
+            },
+            {
+              "name": "orderType",
+              "type": "string",
+              "value": "={{ $json['Order Type'] }}",
+              "id": "50709973-0039-49f0-ae9c-d41293e2ec34"
+            },
+            {
+              "name": "deliveryAddress",
+              "type": "string",
+              "value": "={{ $json['Delivery Address'] }}",
+              "id": "afc73bdf-4486-4c1b-8339-f8d54d56c4d9"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "98e38783-3714-4daa-8596-4c4a797fbe75",
+      "name": "Edit Fields: Prepare Customer Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -800,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "orderId",
+              "type": "string",
+              "value": "=KFH-{{ $now.toMillis() }}",
+              "id": "7bdfbea4-ca3d-4024-8683-9df7736fd0f1"
+            },
+            {
+              "name": "dateTime",
+              "type": "string",
+              "value": "={{ $now.toISO() }}",
+              "id": "018dbc34-3922-4178-bbe1-169129e7bf39"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "af14b207-1c2e-43af-913e-de4a6e1e8379",
+      "name": "Edit Fields: Generate Order ID",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -560,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Google Sheets: Form Responses Row Added').item.json['Food Items'] }}",
+                    "rightValue": "Chicken Biryani",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "e80dbb52-5256-4dae-b4e9-f67ed162637c"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Chicken Biryani"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "",
+                    "rightValue": "Zinger Burger",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "25d35a4c-5b99-4d06-b132-44633e0091cc"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Zinger Brger"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Google Sheets: Form Responses Row Added').item.json['Food Items'] }}",
+                    "rightValue": "Chicken Karahi",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "25134c9f-e077-4887-9384-6f73ff8a0955"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Chicken Karahi"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9391e6c2-de41-4949-99ed-eae8cc75bf1c",
+      "name": "Switch: Food Item",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        -320,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "unitPrice",
+              "type": "number",
+              "value": 300
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "666f2509-397f-4433-83cf-5305b0dddae0",
+      "name": "Set Price: Chicken Biryani",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -80,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "Unit Price",
+              "type": "number",
+              "value": 450,
+              "id": "9f0e991d-7725-4762-b12f-648e371680ba"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4b9ab21f-201c-4be3-8b55-8478775b730d",
+      "name": "Set Price: Zinger Burger",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -80,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "unitPrice",
+              "type": "number",
+              "value": 1200
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2e32070f-8331-49bf-bc7b-f11993ab95ac",
+      "name": "Set Price: Chicken Karahi",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -80,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "totalAmount",
+              "type": "number",
+              "value": "={{ $('Google Sheets: Form Responses Row Added').item.json['Unit Price'] }}",
+              "id": "37323842-ad76-4a08-8ac5-09387cfc4d5b"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3e2700c3-ea61-48f8-84ea-6713179f70b5",
+      "name": "Edit Fields: Calculate Total Amount",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        160,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $('Limit: Process 1 Order').item.json['Order Type'] }}",
+              "rightValue": "Pickup",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "id": "7f650a00-bd0a-4471-9606-d496d3674e11"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "3ace67f1-77f9-43d2-8252-17f49fedf134",
+      "name": "IF: Order Type = Pickup",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        400,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "orderStatus",
+              "type": "string",
+              "value": "Confirmed for Pickup"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c0d8ecb6-0702-4403-9efb-892a9aa69ed3",
+      "name": "Set Fields: Confirmed for Pickup",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        640,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $('Google Sheets: Form Responses Row Added').item.json['Delivery Address'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              },
+              "id": "cda692eb-0518-4453-b32b-c1de006ab713"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "e33e92e2-1fb4-42e2-96e6-0772aee930a5",
+      "name": "IF: Address Available",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        640,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "orderStatus",
+              "type": "string",
+              "value": "Confirmed for Delivery"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4973db7e-b126-4118-809c-003dc747712e",
+      "name": "Set Fields: Confirmed for Delivery",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        880,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Google Sheets: Form Responses Row Added').item.json['Customer Email'] }}",
+        "subject": "Address Needed - Karachi Food House",
+        "emailType": "text",
+        "message": "=Hi {{ $('Google Sheets: Form Responses Row Added').item.json['Customer Name'] }} , your delivery order for {{ $('Google Sheets: Form Responses Row Added').item.json['Food Items'] }} is missing a delivery address. Please reply with your address so we can process your order.",
+        "options": {}
+      },
+      "id": "1466af95-3e04-4ed9-834b-6dbd5788bff2",
+      "name": "Gmail: Ask for Address",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        880,
+        464
+      ],
+      "webhookId": "b865ca06-55d3-47c2-bf2d-bd6a7122c290",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "LAGbq9SWqrIpPaon",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1z35UlnHKcrKkhtn9H9LZ02D1R1kdLFG_sv8QT6OblNw",
+          "mode": "list",
+          "cachedResultName": "Karachi Food House",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1z35UlnHKcrKkhtn9H9LZ02D1R1kdLFG_sv8QT6OblNw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 918456602,
+          "mode": "list",
+          "cachedResultName": "Form Responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1z35UlnHKcrKkhtn9H9LZ02D1R1kdLFG_sv8QT6OblNw/edit#gid=918456602"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Customer Name",
+              "displayName": "Customer Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Customer Email",
+              "displayName": "Customer Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Food Items",
+              "displayName": "Food Items",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Quantity ",
+              "displayName": "Quantity ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Order Type",
+              "displayName": "Order Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Delivery Address",
+              "displayName": "Delivery Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Unit Price",
+              "displayName": "Unit Price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Payment Status",
+              "displayName": "Payment Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Order ID",
+              "displayName": "Order ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "e7dabdc5-270f-4bdc-ac29-c894d0364554",
+      "name": "Google Sheets: Update Row Missing Address",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1120,
+        464
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ORJb6VaVQaWcsByZ",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1z35UlnHKcrKkhtn9H9LZ02D1R1kdLFG_sv8QT6OblNw",
+          "mode": "list",
+          "cachedResultName": "Karachi Food House",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1z35UlnHKcrKkhtn9H9LZ02D1R1kdLFG_sv8QT6OblNw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 918456602,
+          "mode": "list",
+          "cachedResultName": "Form Responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1z35UlnHKcrKkhtn9H9LZ02D1R1kdLFG_sv8QT6OblNw/edit#gid=918456602"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp": "={{ $('Google Sheets: Form Responses Row Added').item.json.Timestamp }}",
+            "Customer Name": "={{ $('Google Sheets: Form Responses Row Added').item.json['Customer Name'] }}",
+            "Customer Email": "={{ $('Google Sheets: Form Responses Row Added').item.json['Customer Email'] }}",
+            "Food Items": "={{ $('Google Sheets: Form Responses Row Added').item.json['Food Items'] }}",
+            "Quantity ": "={{ $('Google Sheets: Form Responses Row Added').item.json['Quantity '] }}",
+            "Order Type": "={{ $('Google Sheets: Form Responses Row Added').item.json['Order Type'] }}",
+            "Delivery Address": "={{ $('Google Sheets: Form Responses Row Added').item.json['Delivery Address'] }}",
+            "Unit Price": "={{ $('Google Sheets: Form Responses Row Added').item.json['Unit Price'] }}",
+            "Payment Status": "={{ $('Google Sheets: Form Responses Row Added').item.json['Payment Status'] }}",
+            "Order ID": "={{ $('Google Sheets: Form Responses Row Added').item.json['Order ID'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Customer Name",
+              "displayName": "Customer Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Customer Email",
+              "displayName": "Customer Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Food Items",
+              "displayName": "Food Items",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Quantity ",
+              "displayName": "Quantity ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Order Type",
+              "displayName": "Order Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Delivery Address",
+              "displayName": "Delivery Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Unit Price",
+              "displayName": "Unit Price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Payment Status",
+              "displayName": "Payment Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Order ID",
+              "displayName": "Order ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "a6cfa959-8867-415e-8d30-d4266c73d49e",
+      "name": "Google Sheets: Append Row Confirmed Orders",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1120,
+        144
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ORJb6VaVQaWcsByZ",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "paymentStatus",
+              "type": "string",
+              "value": "Payment Pending"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d4ddf781-a4c1-4035-b554-bb11655d390b",
+      "name": "Set Fields: Payment Pending",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1360,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1z35UlnHKcrKkhtn9H9LZ02D1R1kdLFG_sv8QT6OblNw",
+          "mode": "list",
+          "cachedResultName": "Karachi Food House",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1z35UlnHKcrKkhtn9H9LZ02D1R1kdLFG_sv8QT6OblNw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 918456602,
+          "mode": "list",
+          "cachedResultName": "Form Responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1z35UlnHKcrKkhtn9H9LZ02D1R1kdLFG_sv8QT6OblNw/edit#gid=918456602"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Customer Name": "={{ $('Google Sheets: Form Responses Row Added').item.json['Customer Name'] }}",
+            "Timestamp": "={{ $('Google Sheets: Form Responses Row Added').item.json.Timestamp }}",
+            "Customer Email": "={{ $('Google Sheets: Form Responses Row Added').item.json['Customer Email'] }}",
+            "Food Items": "={{ $('Google Sheets: Form Responses Row Added').item.json['Food Items'] }}",
+            "Quantity ": "={{ $('Google Sheets: Form Responses Row Added').item.json['Quantity '] }}",
+            "Order Type": "={{ $('Google Sheets: Form Responses Row Added').item.json['Order Type'] }}",
+            "Delivery Address": "={{ $('Google Sheets: Form Responses Row Added').item.json['Delivery Address'] }}",
+            "Unit Price": "={{ $('Google Sheets: Form Responses Row Added').item.json['Unit Price'] }}",
+            "Payment Status": "={{ $('Google Sheets: Form Responses Row Added').item.json['Payment Status'] }}",
+            "Order ID": "={{ $('Google Sheets: Form Responses Row Added').item.json['Order ID'] }}"
+          },
+          "matchingColumns": [
+            "Customer Name"
+          ],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Customer Name",
+              "displayName": "Customer Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Customer Email",
+              "displayName": "Customer Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Food Items",
+              "displayName": "Food Items",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Quantity ",
+              "displayName": "Quantity ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Order Type",
+              "displayName": "Order Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Delivery Address",
+              "displayName": "Delivery Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Unit Price",
+              "displayName": "Unit Price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Payment Status",
+              "displayName": "Payment Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Order ID",
+              "displayName": "Order ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "743a35b5-7e78-4fa6-9cab-67fdf4ffdc76",
+      "name": "Google Sheets: Update Row Confirmation Sent",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1600,
+        144
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ORJb6VaVQaWcsByZ",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json['Customer Email'] }}",
+        "subject": "={{ $json['Payment Status'] }}Order Confirmed -",
+        "emailType": "text",
+        "message": "= Hi {{ $json['Customer Name'] }} \n\nYour order is confirmed!\n\nOrder ID: {{ $json['Order ID'] }}\nItem: {{ $json['Food Items'] }} * {{ $json['Quantity '] }}\nTotal: Rs. 300\nStatus: {{ $json['Payment Status'] }}\n\nPlease pay and reply to this email with the subject line exactly: PAYMENT SENT\n\nThank you - Karachi Food House",
+        "options": {}
+      },
+      "id": "c4fae2fa-75a4-4e7c-848c-d93122e4cee2",
+      "name": "Gmail: Send Order Confirmation and Payment Instructions",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1840,
+        144
+      ],
+      "webhookId": "54ac4013-4bb4-46b9-92b9-04d32f634a11",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "LAGbq9SWqrIpPaon",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Sheets: Form Responses Row Added": {
+      "main": [
+        [
+          {
+            "node": "Limit: Process 1 Order",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit: Process 1 Order": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields: Prepare Customer Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields: Prepare Customer Data": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields: Generate Order ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields: Generate Order ID": {
+      "main": [
+        [
+          {
+            "node": "Switch: Food Item",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch: Food Item": {
+      "main": [
+        [
+          {
+            "node": "Set Price: Chicken Biryani",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Price: Zinger Burger",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Price: Chicken Karahi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Price: Chicken Biryani": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields: Calculate Total Amount",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Price: Zinger Burger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields: Calculate Total Amount",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Price: Chicken Karahi": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields: Calculate Total Amount",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields: Calculate Total Amount": {
+      "main": [
+        [
+          {
+            "node": "IF: Order Type = Pickup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF: Order Type = Pickup": {
+      "main": [
+        [
+          {
+            "node": "Set Fields: Confirmed for Pickup",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "IF: Address Available",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Fields: Confirmed for Pickup": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets: Append Row Confirmed Orders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF: Address Available": {
+      "main": [
+        [
+          {
+            "node": "Set Fields: Confirmed for Delivery",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gmail: Ask for Address",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Fields: Confirmed for Delivery": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets: Append Row Confirmed Orders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail: Ask for Address": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets: Update Row Missing Address",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets: Append Row Confirmed Orders": {
+      "main": [
+        [
+          {
+            "node": "Set Fields: Payment Pending",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Fields: Payment Pending": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets: Update Row Confirmation Sent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets: Update Row Confirmation Sent": {
+      "main": [
+        [
+          {
+            "node": "Gmail: Send Order Confirmation and Payment Instructions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "6bef5bd9-232b-4963-ab99-5e39db4d47c7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "99828d8ae8d48973422e06abb16ca549644dde73f2d470327d23ebd6525527f7"
+  },
+  "nodeGroups": [],
+  "id": "2eD00RmfqRhPdQy7",
+  "tags": []
+}
